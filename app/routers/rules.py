@@ -1,12 +1,14 @@
-import traceback
+# -- scripts imports --
+from app.db_models import MissionDataRow, GeometryRow, GeometryToTeamRow, TeamRow, QAMissionRow, NewMissionRow
+from app.pydantic_schemas import RuleCreate
+from app.database import get_db_session
+# -- env imports --
 from fastapi import APIRouter, Depends, HTTPException
 from shapely.geometry import Point, Polygon
 from geoalchemy2.shape import from_shape
 from sqlalchemy.orm import Session
 from datetime import datetime
-from app.database import get_db_session
-from app.db_models import MissionDataRow, GeometryRow, GeometryToTeamRow, TeamRow, QAMissionRow, NewMissionRow
-from app.pydantic_schemas import RuleCreate
+import traceback
 
 router = APIRouter(prefix="/api/rules", tags=["Rules"])
 

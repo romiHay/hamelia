@@ -1,10 +1,12 @@
+# -- scripts imports --
+from app.db_models import GeometryRow, GeometryToTeamRow, QAMissionRow, NewMissionRow
+from app.database import get_db_session
+from sqlalchemy.orm import Session
+# -- env imports --
 from fastapi import APIRouter, Depends, HTTPException, Body
 from geoalchemy2.shape import to_shape
 from shapely.geometry import mapping
 from datetime import datetime
-from sqlalchemy.orm import Session
-from app.database import get_db_session
-from app.db_models import GeometryRow, GeometryToTeamRow, QAMissionRow, NewMissionRow
 
 router = APIRouter(prefix="/api/geometries", tags=["Geometries"])
 

@@ -1,8 +1,10 @@
+# -- scripts imports --
+from app.database import get_db_session
+from app.db_models import MissionDataRow
+# -- env imports --
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
-from app.database import get_db_session
-from app.db_models import MissionDataRow
 
 router = APIRouter(prefix="/api/missions", tags=["Missions"])
 

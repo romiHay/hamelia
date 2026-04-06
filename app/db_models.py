@@ -1,9 +1,11 @@
-from sqlalchemy import Column, String, Integer, text
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
-from geoalchemy2 import Geometry
+# -- scripts imports --
 from app.database import Base
+# -- env imports --
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy import Column, String, Integer, text
+from geoalchemy2 import Geometry
 
-# === WEB GENERAL SCHEMA ===
+# --- WEB GENERAL SCHEMA ---
 
 class MissionDataRow(Base):
     __tablename__ = "missions_data"
@@ -36,7 +38,7 @@ class TeamRow(Base):
     
     uuid = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
 
-# === MISSIONS SCHEMA ===
+# --- MISSIONS SCHEMA ---
 
 class QAMissionRow(Base):
     __tablename__ = "qa"
