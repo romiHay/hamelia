@@ -1,8 +1,9 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
-from app.database import Base, MY_ENGINE
+# -- scripts imports --
 from app.routers import geometries, rules, missions
+from app.database import Base, MY_ENGINE
+# -- env imports --
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
 
 Base.metadata.create_all(bind=MY_ENGINE)
 
