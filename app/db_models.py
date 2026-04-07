@@ -2,11 +2,11 @@
 from app.database import Base
 # -- env imports --
 from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
-from sqlalchemy import Column, String, text
+from sqlalchemy import Column, String, text, Index
 from geoalchemy2 import Geometry
 
 
-# === WEB GENERAL SCHEMA ===
+# --- WEB GENERAL SCHEMA ---
 class MissionDataRow(Base):
     __tablename__ = "missions_data"
     __table_args__ = {'schema': 'web_general'}
@@ -24,7 +24,7 @@ class GeometryRow(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
     geometry_name = Column(String, nullable=False)
     created_by = Column(String, default="user")
-    geometry = Column(Geometry('GEOMETRY', srid=4326))
+    geometry = Column(Geometry(geometry_type='GEOMETRY', srid=4326, spatial_index=True))
 
 
 class GeometryToTeamRow(Base):
@@ -43,13 +43,16 @@ class TeamRow(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
 
 
-# === MISSIONS SCHEMA ===
+# --- MISSIONS SCHEMA ---
 class GenericRuleRow(Base):
     __tablename__ = "rules"
-    __table_args__ = {'schema': 'missions'}
+    __table_args__ = (
+        Index('idx_rules_parameters_gin', 'parameters', postgresql_using='gin'),
+        {'schema': 'missions'}
+    )
 
-    uuid = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
-    mission_uuid = Column(UUID(as_uuid=True))
+    uuid = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"), index=True)
+    mission_uuid = Column(UUID(as_uuid=True), index=True)
     name = Column(String)
     description = Column(String)
     value = Column(String)
