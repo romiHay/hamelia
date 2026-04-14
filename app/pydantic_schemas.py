@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 
 
 class GeometryCreate(BaseModel):
+    id: str = None
     name: str
     type: str  # 'Point' or 'Polygon'
     coordinates: Union[List[float], List[List[float]]]

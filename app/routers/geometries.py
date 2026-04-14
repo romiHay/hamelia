@@ -13,7 +13,6 @@ router = APIRouter(prefix="/api/geometries", tags=["Geometries"])
 
 @router.get("/")
 def get_geometries(db: Session = Depends(get_db_session)):
-    print("\n---Getting geometries to show---")
     try:
         # SUPER FAST: Database queries
         geos_raw = db.query(GeometryRow).all()
@@ -63,12 +62,10 @@ def get_geometries(db: Session = Depends(get_db_session)):
             })
         return all_geos
     except Exception as e:
-        print(f"\n---time: {datetime.now()}, Error fetching geometries: {e}---")
         raise HTTPException(status_code=500, detail="Failed to fetch geometries")
 
-@router.delete("/bulk-delete")
+@router.delete("/bulk-delete-geometries")
 def bulk_delete_geometries(geo_ids: list[str], db: Session = Depends(get_db_session)):
-    print(f"\n---bulk_delete_geometries: {geo_ids}---")
     try:
         for geo_id in geo_ids:
             # FIX: Use PostgreSQL .contains() list for Arrays
@@ -77,7 +74,6 @@ def bulk_delete_geometries(geo_ids: list[str], db: Session = Depends(get_db_sess
             ).first()
             if attached_rule:
                 e = f"Geometry '{geo_id}' cannot be deleted because it is still attached to rule '{attached_rule.name}'"
-                print(f"\n---time: {datetime.now()}, Error bulk deleting geometries {geo_ids}: {e}---")
                 raise HTTPException(status_code=400, detail=e)
             # Cleanup Foreign Keys (Team Link) FIRST
             db.query(GeometryToTeamRow).filter(
@@ -88,19 +84,16 @@ def bulk_delete_geometries(geo_ids: list[str], db: Session = Depends(get_db_sess
                 GeometryRow.uuid == geo_id
             ).delete(synchronize_session=False)
         db.commit()
-        print(f"\n---time: {datetime.now()}, Managed bulk deleting geometries {geo_ids}---")
         return {"message": f"Successfully deleted {len(geo_ids)} standalone geometries"}
     except HTTPException:
         raise
     except Exception as e:
-        print(f"\n---time: {datetime.now()}, Error bulk deleting geometries {geo_ids}: {e}---")
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/{geo_id}")
+@router.delete("/delete-geometry-{geo_id}")
 def delete_geometry(geo_id: str, db: Session = Depends(get_db_session)):
-    print(f"\n---Deleting geometry {geo_id}---")
     try:
         # FIX: Use PostgreSQL .contains() list for Arrays
         attached_rule = db.query(GenericRuleRow).filter(
@@ -108,7 +101,6 @@ def delete_geometry(geo_id: str, db: Session = Depends(get_db_session)):
         ).first()
         if attached_rule:
             e = f"Geometry cannot be deleted because it is still attached to rule '{attached_rule.name}'"
-            print(f"\n---time: {datetime.now()}, Error deleting geometry {geo_id}: {e}---")
             raise HTTPException(status_code=400, detail=e)
         # Cleanup Foreign Keys (Team Link) FIRST
         db.query(GeometryToTeamRow).filter(
@@ -119,14 +111,11 @@ def delete_geometry(geo_id: str, db: Session = Depends(get_db_session)):
             GeometryRow.uuid == geo_id
         ).delete(synchronize_session=False)
         if deleted_count == 0:
-            print(f"\n---time: {datetime.now()}, Error deleting geometry {geo_id}: Geometry not found---")
             raise HTTPException(status_code=404, detail="Geometry not found")
         db.commit()
-        print(f"\n---time: {datetime.now()}, Managed deleting geometries {geo_id}---")
         return {"message": "Geometry deleted successfully"}
     except HTTPException:
         raise
     except Exception as e:
-        print(f"\n---time: {datetime.now()}, Error deleting geometry {geo_id}: {e}---")
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
