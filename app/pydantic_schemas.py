@@ -3,24 +3,23 @@ from pydantic import BaseModel, Field
 
 
 class GeometryCreate(BaseModel):
-    id: str = None
-    name: str
-    type: str  # 'Point' or 'Polygon'
-    coordinates: Union[List[float], List[List[float]]]
-
+   id: str = None
+   name: str
+   type: str  # 'Point' or 'Polygon'
+   coordinates: Union[List[float], List[List[float]]]
+   system_uuid: Optional[str] = None
 
 class RuleData(BaseModel):
-    id: Optional[str] = None
-    name: str
-    description: str
-    value: str
-    missionId: str
-    geometryIds: Optional[List[str]] = []
-    geometryId: Optional[str] = None
-    parameters: Optional[Dict[str, Any]] = Field(default_factory=dict)
-
+   id: Optional[str] = None
+   name: str
+   description: str
+   value: str
+   missionId: str
+   geometryIds: Optional[List[str]] = []
+   geometryId: Optional[str] = None
+   parameters: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 class RuleCreate(BaseModel):
-    rule: RuleData
-    newGeo: Optional[GeometryCreate] = None
-    newGeos: Optional[List[GeometryCreate]] = None
+   rule: RuleData
+   newGeo: Optional[GeometryCreate] = None
+   newGeos: Optional[List[GeometryCreate]] = None
